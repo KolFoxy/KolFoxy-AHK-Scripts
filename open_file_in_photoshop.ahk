@@ -9,11 +9,11 @@ SetWorkingDir %A_ScriptDir%  ; Ensures a consistent starting directory.
 
 #IfWinActive ahk_exe explorer.exe ; works only in Windows explorer
 
-!m:: ;alt+m open selected file  in mediainfo
-KeyWait, m
-KeyWait, Alt
-clipbuff := clipboard
-clipboard=
+^e:: ; Ctrl+E to try to open selected file in Photoshop 
+KeyWait, Ctrl
+KeyWait, e
+clipsafe = %clipboard%
+clipboard =
 SendInput, ^c
 ClipWait, 2
 if ErrorLevel
@@ -22,9 +22,9 @@ if ErrorLevel
     clipboard := clipbuff
 	Return
 }
-buff = %clipboard%
-; replace "C:\Program Files\MediaInfo\MediaInfo.exe"
-; with yours path to MediaInfo.exe
-Run, "C:\Program Files\MediaInfo\MediaInfo.exe" "%buff%" 
-clipboard := clipbuff
+clipboard = %clipboard%
+; replace "C:\Program Files\Adobe\Adobe Photoshop CC\Photoshop.exe"
+; with yours path to Photoshop.exe
+Run, "C:\Program Files\Adobe\Adobe Photoshop CC\Photoshop.exe" -open %clipboard%
+clipboard := clipsafe
 Return

@@ -5,22 +5,27 @@ SetWorkingDir %A_ScriptDir%  ; Ensures a consistent starting directory.
 #Persistent
 #InstallKeybdHook 
 
-#IfWinActive ahk_class MozillaWindowClass ; or use ahk_exe BROWSER.EXE
+#If WinActive("ahk_exe firefox.exe") or WinActive("ahk_exe chrome.exe") ; or use ahk_exe BROWSER.EXE for different browsers
 
-F3:: ; F3 - copy browser's opened address line, get a tinyurl of it, put the result into clipboard
+F4:: ; F4 - copy browser's opened address line, get a tinyurl of it, put the result into clipboard
 
 clipboard = 
 SendInput, ^l ; ctrl+l — selects address field. Works in most modern browsers.
 Sleep, 10
 SendInput, ^c
-ClipWait
+ClipWait, 2
+if ErrorLevel
+{
+    MsgBox, Attempt to copy the address field has failed.
+	Return
+}
 clipboard = %clipboard%
 clipboard := GetTinyurlOfString(clipboard)
-MsgBox %clipboard%
+MsgBox %clipboard% ;Delete this line if you don't want a textbox with tinyurl appear after successful operation.
 Return
 
 GetTinyurlOfString(str){
-whr := ComObjCreate("WinHttp.WinHttpRequest.5.1") ;https://docs.microsoft.com/en-us/windows/desktop/winhttp/winhttprequest
+whr := ComObjCreate("WinHttp.WinHttpRequest.5.1") ;https://docs.microsoft.com/en-us/windows/desktop/winhttp/winhttprequest documentation for this COM object
 str := "http://tinyurl.com/api-create.php?url=" . str
 whr.Open("GET", str, true)
 whr.Send()
